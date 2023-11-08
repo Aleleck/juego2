@@ -11,13 +11,18 @@ class Bootloader extends Phaser.Scene {
         this.load.image('termo', 'termometro.png');
         this.load.image('subir', 'subir.png');
         this.load.image('bajar', 'bajar.png');
+        this.load.video('fondo', 'fondo.mp4');
+        this.load.audio('sonidoC', 'sound.wav');
     }
 
     create() {
-        this.cameras.main.setBackgroundColor('#f7f2f2');
-        this.physics.world.setBounds(150, 180, 170, 185); // Establece los límites del mundo
+        this.add.video( 400, 300, 'fondo').setScale(0.43,0.56).play(true);
+        
+        this.physics.world.setBounds(220, 230, 170, 185); // Establece los límites del mundo
+        this.add.image(350, 300, 'cube').setScale(1.5);
 
-        const barraRoja = this.add.rectangle(700, 350, 10, 200, 0xff0000); // Punto de origen en (700, 350)
+        const collisionSound = this.sound.add('sonidoC');
+        const barraRoja = this.add.rectangle(700, 350, 10, 0, 0xff0000); // Punto de origen en (700, 350)
         barraRoja.setOrigin(0.5, 1); // Establece el punto de origen en la parte inferior
 
         let longitudBarra = 0;
@@ -27,7 +32,7 @@ class Bootloader extends Phaser.Scene {
 
         const particles = this.physics.add.group({
             key: 'particle_yellow',
-            frameQuantity: 7,
+            frameQuantity: 10,
             collideWorldBounds: true,
             bounceX: 1,
             bounceY: 1,
@@ -42,6 +47,7 @@ class Bootloader extends Phaser.Scene {
             particle.setScale(0.3);
             particle.setVelocity(0, 0); // Inicialmente, las partículas están en reposo
             particle.setCollideWorldBounds(true);
+            particle.setDepth(2);
         });
 
         // Función para actualizar la velocidad de las partículas
@@ -54,6 +60,7 @@ class Bootloader extends Phaser.Scene {
         this.add.image(700, 100, 'subir')
             .setScale(1.3)
             .setInteractive()
+            
             .on('pointerdown', () => {
                 longitudBarra += 10; // Aumenta la longitud hacia arriba (ajusta este valor según lo desees)
 
@@ -72,6 +79,7 @@ class Bootloader extends Phaser.Scene {
         this.add.image(700, 500, 'bajar')
             .setScale(0.8)
             .setInteractive()
+            
             .on('pointerdown', () => {
                 longitudBarra -= 10; // Disminuye la longitud hacia abajo (ajusta este valor según lo desees)
 
@@ -89,13 +97,22 @@ class Bootloader extends Phaser.Scene {
 
         this.add.image(700, 300, 'termo').setScale(0.5, 0.7);
 
-        this.add.image(280, 250, 'cube').setScale(1.5);
+        
 
         // Configura la física del mundo en el modo "arcade"
         this.physics.world.setBoundsCollision(true, true, true, true);
 
         // Colisión entre las partículas dentro del grupo
         this.physics.add.collider(particles, particles);
+
+        this.time.addEvent({
+            delay: 1000, // 1000 milisegundos (1 segundo)
+            callback: () => {
+                // Reproduce el sonido cada segundo
+                collisionSound.play();
+            },
+            loop: true, // Para que el evento se repita indefinidamente
+        });
     }
 }
 
