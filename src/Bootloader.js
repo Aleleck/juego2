@@ -11,11 +11,13 @@ class Bootloader extends Phaser.Scene {
         this.load.image('termo', 'termometro.png');
         this.load.image('subir', 'subir.png');
         this.load.image('bajar', 'bajar.png');
+        this.load.image('puntero', 'puntero.png');
         this.load.video('fondo', 'fondo.mp4');
         this.load.audio('sonidoC', 'sound.wav');
     }
 
     create() {
+        this.input.setDefaultCursor('url("assets/puntero.png"), pointer');
         this.add.video( 400, 300, 'fondo').setScale(0.43,0.56).play(true);
         
         this.physics.world.setBounds(220, 230, 170, 185); // Establece los límites del mundo
